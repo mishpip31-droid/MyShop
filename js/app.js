@@ -3,11 +3,12 @@
 
   const CFG = window.SHOP_CONFIG || {};
   const PRODUCTS = window.PRODUCTS || [];
-  const CATS = { interior: "Для интерьера", garden: "Для сада" };
+  const CATS = { interior: "Для дома", garden: "Для сада" };
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
-
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+  document.documentElement.classList.add("js");
 
   /* ---------- Рисованные заглушки ---------- */
   const ICONS = {
@@ -21,17 +22,14 @@
     art: '<path d="M60 108V60M60 60c0-20 20-30 34-34M60 72C50 56 30 52 20 52M60 86c10-10 26-10 34-6M80 36c4-6 10-8 14-10-2 6-6 10-14 10zM34 54c-6-4-12-4-16-2 4 4 10 6 16 2zM86 82c4 2 6 6 8 10-6-2-8-6-8-10z"/><circle class="glow" cx="60" cy="60" r="3"/>',
   };
 
-  function placeholder(p) {
-    return `<div class="ph" role="img" aria-label="${esc(p.name)}"><svg viewBox="0 0 120 120">${ICONS[p.icon] || ICONS.art}</svg><span class="ph__label">Фото скоро</span></div>`;
-  }
-  function mediaHTML(p, i = 0) {
-    return p.images && p.images.length
-      ? `<img src="${esc(p.images[i])}" alt="${esc(p.name)}" loading="lazy">`
-      : placeholder(p);
-  }
+  const placeholder = (p) =>
+    `<div class="ph ph--${esc(p.category)}" role="img" aria-label="${esc(p.name)}"><svg viewBox="0 0 120 120">${ICONS[p.icon] || ICONS.art}</svg><span class="ph__label">фото скоро</span></div>`;
+  const mediaHTML = (p, i = 0) =>
+    p.images && p.images.length ? `<img src="${esc(p.images[i])}" alt="${esc(p.name)}" loading="lazy">` : placeholder(p);
+  const cur = () => esc(CFG.currency || "BYN");
   function priceHTML(p) {
-    if (p.price == null) return `<span class="price"><small>Цена по запросу</small></span>`;
-    return `<span class="price">${p.priceFrom ? "<small>от</small> " : ""}${p.price} <small>${esc(CFG.currency || "BYN")}</small></span>`;
+    if (p.price == null) return `<span class="price"><small>по запросу</small></span>`;
+    return `<span class="price">${p.priceFrom ? "<small>от</small> " : ""}${p.price} <small>${cur()}</small></span>`;
   }
   function priceText(p) {
     if (p.price == null) return "цена по запросу";
@@ -44,11 +42,7 @@
     wa: '<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.8 14.2c-.2.7-1.4 1.3-2 1.4-.5.1-1.2.1-1.9-.1a17 17 0 0 1-1.8-.7 13.6 13.6 0 0 1-5.1-4.6c-.6-.8-1.2-2-1.2-3.2s.6-1.8.9-2.1c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.2-.3.3-.1.6.2.3.8 1.3 1.6 2.1 1.1 1 2.1 1.3 2.4 1.4.3.2.5.1.6 0l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.8-.2 1.5z"/></svg>',
     vb: '<svg viewBox="0 0 24 24"><path d="M11.4 1.6C8.6 1.7 3.5 2.2 2.2 7c-.6 2.5-.7 5.5-.3 8.2.5 3 2.4 4.6 4.5 5.3v2.6c0 .5.6.7.9.4l2.4-2.6c2.7.2 5.3-.1 7.2-.6 4.1-1.2 5-4.6 5.2-8.8.2-4.6-.5-7.7-2.7-8.9C17.6 1.8 14.8 1.5 11.4 1.6zm4.9 14.1c-.4.6-1.2 1-1.9.9-2.6-.6-5.4-3.2-6.6-5.8-.4-.9-.6-1.6 0-2.3.4-.4 1.2-.9 1.6-.4l1.2 1.6c.3.4.2 1-.2 1.3-.3.3-.4.6-.1 1 .7 1.2 1.6 2.1 2.9 2.7.4.2.7.1 1-.3.4-.5.9-.5 1.4-.2l1.4 1c.4.3.4.8-.7.5z"/></svg>',
   };
-
-  function waLink(text) {
-    const t = text ? `?text=${encodeURIComponent(text)}` : "";
-    return `https://wa.me/${CFG.phone}${t}`;
-  }
+  const waLink = (text) => `https://wa.me/${CFG.phone}${text ? `?text=${encodeURIComponent(text)}` : ""}`;
   function messengerLinks(text) {
     const out = [];
     if (CFG.telegram) out.push({ cls: "tg", name: "Telegram", href: `https://t.me/${encodeURIComponent(CFG.telegram)}` });
@@ -61,80 +55,85 @@
       .join("");
   }
 
+  /* ---------- Появление при прокрутке ---------- */
+  const io = "IntersectionObserver" in window
+    ? new IntersectionObserver((entries) => entries.forEach((e) => {
+        if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); }
+      }), { rootMargin: "0px 0px -6% 0px" })
+    : null;
+  function observeReveals(root = document) {
+    $$(".reveal:not(.is-in)", root).forEach((el, i) => {
+      if (!io) return el.classList.add("is-in");
+      if (el.closest(".grid, .process, .hero__content")) el.style.transitionDelay = (i % 4) * 90 + "ms";
+      io.observe(el);
+    });
+  }
+
   /* ---------- Каталог ---------- */
   const grid = $("#grid");
   function renderGrid(filter = "all") {
-    const list = PRODUCTS.filter((p) => filter === "all" || p.category === filter);
-    grid.innerHTML = list
-      .map(
-        (p) => `
-      <article class="product" tabindex="0" data-id="${esc(p.id)}" aria-label="${esc(p.name)}">
+    grid.innerHTML = PRODUCTS.filter((p) => filter === "all" || p.category === filter)
+      .map((p) => `
+      <article class="product reveal" tabindex="0" data-id="${esc(p.id)}" aria-label="${esc(p.name)}">
         <div class="product__media">
           ${p.badge ? `<span class="product__badge">${esc(p.badge)}</span>` : ""}
           ${mediaHTML(p)}
+          <span class="product__open" aria-hidden="true">→</span>
         </div>
         <div class="product__body">
-          <span class="product__cat">${esc(CATS[p.category] || "")}</span>
-          <h3 class="product__name">${esc(p.name)}</h3>
-          <p class="product__desc">${esc(p.description)}</p>
-          <div class="product__foot">${priceHTML(p)}<span class="product__more">Подробнее →</span></div>
+          <div class="product__top"><h3 class="product__name">${esc(p.name)}</h3>${priceHTML(p)}</div>
+          <p class="product__meta">${esc(CATS[p.category] || "")}${p.size ? " · " + esc(p.size) : ""}</p>
         </div>
-      </article>`
-      )
+      </article>`)
       .join("");
+    observeReveals(grid);
   }
+  function setFilter(f) {
+    $$(".filter").forEach((b) => b.classList.toggle("is-active", b.dataset.filter === f));
+    renderGrid(f);
+  }
+  $$(".filter").forEach((b) => b.addEventListener("click", () => setFilter(b.dataset.filter)));
+  $$(".cat[data-cat]").forEach((c) => c.addEventListener("click", () => setFilter(c.dataset.cat)));
 
-  $$(".filter").forEach((btn) =>
-    btn.addEventListener("click", () => {
-      $$(".filter").forEach((b) => b.classList.toggle("is-active", b === btn));
-      renderGrid(btn.dataset.filter);
-    })
-  );
-
-  grid.addEventListener("click", (e) => {
-    const card = e.target.closest(".product");
-    if (card) openModal(card.dataset.id);
+  const plural = (n) =>
+    n % 10 === 1 && n % 100 !== 11 ? "изделие" : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? "изделия" : "изделий";
+  $$("[data-count]").forEach((el) => {
+    const n = PRODUCTS.filter((p) => p.category === el.dataset.count).length;
+    el.textContent = `${n} ${plural(n)} в каталоге`;
   });
+
+  grid.addEventListener("click", (e) => { const c = e.target.closest(".product"); if (c) openModal(c.dataset.id); });
   grid.addEventListener("keydown", (e) => {
-    const card = e.target.closest(".product");
-    if (card && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openModal(card.dataset.id); }
+    const c = e.target.closest(".product");
+    if (c && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openModal(c.dataset.id); }
   });
 
   /* ---------- Окно товара ---------- */
   const modal = $("#modal");
   let lastFocus = null;
-
   function openModal(id) {
     const p = PRODUCTS.find((x) => x.id === id);
     if (!p) return;
     lastFocus = document.activeElement;
-
     const media = $("#mMedia");
     media.innerHTML = `<div class="main">${mediaHTML(p)}</div>` +
       (p.images && p.images.length > 1
         ? `<div class="thumbs">${p.images.map((src, i) => `<img src="${esc(src)}" alt="" data-i="${i}" class="${i ? "" : "is-active"}">`).join("")}</div>`
         : "");
-    $$(".thumbs img", media).forEach((t) =>
-      t.addEventListener("click", () => {
-        $(".main", media).innerHTML = mediaHTML(p, +t.dataset.i);
-        $$(".thumbs img", media).forEach((x) => x.classList.toggle("is-active", x === t));
-      })
-    );
-
+    $$(".thumbs img", media).forEach((t) => t.addEventListener("click", () => {
+      $(".main", media).innerHTML = mediaHTML(p, +t.dataset.i);
+      $$(".thumbs img", media).forEach((x) => x.classList.toggle("is-active", x === t));
+    }));
     $("#mCat").textContent = CATS[p.category] || "";
     $("#mTitle").textContent = p.name;
     $("#mPrice").innerHTML = priceHTML(p);
     $("#mDesc").textContent = p.description;
-    $("#mSpecs").innerHTML = [["Размер", p.size], ["Цвет", p.color]]
-      .filter(([, v]) => v)
-      .map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`)
-      .join("");
-
+    $("#mSpecs").innerHTML = [["Размер", p.size], ["Цвет", p.color], ["Изготовление", "ручная работа, Минск"]]
+      .filter(([, v]) => v).map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join("");
     const form = $("#orderForm");
     form.reset();
     form.product.value = `${p.name} (${priceText(p)})`;
     $("#mMessengers").innerHTML = messengerLinks(`Здравствуйте! Хочу заказать: ${p.name} (${priceText(p)}).`);
-
     modal.classList.add("is-open");
     modal.setAttribute("aria-hidden", "false");
     document.body.style.overflow = "hidden";
@@ -160,15 +159,13 @@
     toastTimer = setTimeout(() => toast.classList.remove("is-show"), 5000);
   }
 
-  /* ---------- Отправка заявок ---------- */
-  const MAX_FILES = 3;
-  const MAX_SIZE = 10 * 1024 * 1024;
-
+  /* ---------- Заявки ---------- */
+  const MAX_FILES = 3, MAX_SIZE = 10 * 1024 * 1024;
+  const FILE_HINT = "До 3 фото, JPG/PNG, до 10 МБ каждое";
   function validate(form) {
     let ok = true;
     $$("[required]", form).forEach((el) => {
-      let bad = !el.value.trim();
-      if (el.type === "tel") bad = el.value.replace(/\D/g, "").length < 9;
+      const bad = el.type === "tel" ? el.value.replace(/\D/g, "").length < 9 : !el.value.trim();
       el.classList.toggle("is-invalid", bad);
       if (bad && ok) { el.focus(); ok = false; }
     });
@@ -178,35 +175,23 @@
     if (!ok) notify("Заполните обязательные поля", true);
     return ok;
   }
-
-  const LABELS = {
-    formType: "Тип", product: "Товар", item: "Изделие", size: "Размеры", color: "Цвет",
-    details: "Описание", budget: "Бюджет", name: "Имя", phone: "Телефон", contactVia: "Связь",
-  };
+  const LABELS = { formType: "Тип", product: "Товар", item: "Изделие", size: "Размеры", color: "Цвет",
+    details: "Описание", budget: "Бюджет", name: "Имя", phone: "Телефон", contactVia: "Связь" };
   function toText(form) {
-    const fd = new FormData(form);
     const lines = [];
-    for (const [k, v] of fd.entries()) {
+    for (const [k, v] of new FormData(form).entries())
       if (LABELS[k] && typeof v === "string" && v.trim()) lines.push(`${LABELS[k]}: ${v.trim()}`);
-    }
     return lines.join("\n");
   }
-
   async function submit(form) {
-    if (form.website && form.website.value) return; // спам-бот
+    if (form.website && form.website.value) return;
     if (!validate(form)) return;
-
-    const btn = $("button[type=submit]", form);
-    const label = btn.textContent;
-
-    // Сервер для Telegram не настроен — открываем WhatsApp с готовым текстом
     if (!CFG.orderEndpoint) {
-      const text = "Здравствуйте! Заявка с сайта «Железно!»\n" + toText(form);
-      window.open(waLink(text), "_blank", "noopener");
+      window.open(waLink("Здравствуйте! Заявка с сайта «Железно!»\n" + toText(form)), "_blank", "noopener");
       notify("Откроется WhatsApp с готовым сообщением — просто нажмите «Отправить».");
       return;
     }
-
+    const btn = $("button[type=submit]", form), label = btn.innerHTML;
     btn.disabled = true;
     btn.textContent = "Отправляем…";
     try {
@@ -214,50 +199,55 @@
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.ok) throw new Error(data.error || res.status);
       form.reset();
-      const hint = $("#fileHint");
-      if (hint) hint.textContent = "JPG/PNG, до 10 МБ каждый";
-      notify("Спасибо! Заявка отправлена — скоро свяжусь с вами 🔥");
+      const hint = $("#fileHint"); if (hint) hint.textContent = FILE_HINT;
+      notify("Спасибо! Заявка отправлена — скоро свяжусь с вами.");
       if (form.id === "orderForm") setTimeout(closeModal, 1200);
     } catch (err) {
       notify("Не удалось отправить. Напишите, пожалуйста, в мессенджер.", true);
     } finally {
       btn.disabled = false;
-      btn.textContent = label;
+      btn.innerHTML = label;
     }
   }
-
   $$("#orderForm, #customForm").forEach((f) => {
     f.addEventListener("submit", (e) => { e.preventDefault(); submit(f); });
     f.addEventListener("input", (e) => e.target.classList.remove("is-invalid"));
   });
-
   const photos = $("#customForm input[type=file]");
   if (photos) photos.addEventListener("change", () => {
     const n = photos.files.length;
-    $("#fileHint").textContent = n ? `Выбрано файлов: ${n}${n > MAX_FILES ? ` (максимум ${MAX_FILES})` : ""}` : "JPG/PNG, до 10 МБ каждый";
+    $("#fileHint").textContent = n ? `Выбрано файлов: ${n}${n > MAX_FILES ? ` (максимум ${MAX_FILES})` : ""}` : FILE_HINT;
   });
 
   /* ---------- Контакты из настроек ---------- */
-  $$("[data-phone]").forEach((el) => (el.textContent = CFG.phoneDisplay || ""));
+  const setText = (sel, v) => $$(sel).forEach((el) => (el.textContent = v || ""));
+  setText("[data-phone]", CFG.phoneDisplay);
   $$("[data-phone-link]").forEach((el) => (el.href = `tel:+${CFG.phone}`));
-  $$("[data-city]").forEach((el) => (el.textContent = CFG.city || ""));
-  $$("[data-hours]").forEach((el) => (el.textContent = CFG.workHours || ""));
-  $$("[data-pickup]").forEach((el) => (el.textContent = CFG.pickupAddress || ""));
-  $$("[data-delivery]").forEach((el) => (el.textContent = CFG.deliveryInfo || ""));
+  setText("[data-city]", CFG.city);
+  setText("[data-hours]", CFG.workHours);
+  setText("[data-pickup]", CFG.pickupAddress);
+  setText("[data-delivery]", CFG.deliveryInfo);
+  setText("[data-faq-delivery]", `Самовывоз: ${CFG.pickupAddress || ""}. ${CFG.deliveryInfo || ""} Оплата наличными или переводом при получении, для изделий на заказ — предоплата 30–50%.`);
   $$("[data-messengers], [data-messengers-float]").forEach((el) => (el.innerHTML = messengerLinks("Здравствуйте! Пишу с сайта «Железно!»")));
   $("#year").textContent = new Date().getFullYear();
 
   /* ---------- Мобильное меню ---------- */
   const burger = $("#burger"), nav = $("#nav");
-  burger.addEventListener("click", () => {
-    const open = nav.classList.toggle("is-open");
-    burger.setAttribute("aria-expanded", open);
-  });
+  burger.addEventListener("click", () => burger.setAttribute("aria-expanded", nav.classList.toggle("is-open")));
   nav.addEventListener("click", (e) => {
     if (e.target.tagName === "A") { nav.classList.remove("is-open"); burger.setAttribute("aria-expanded", "false"); }
   });
 
-  /* ---------- Искры на главном экране ---------- */
+  /* ---------- Шапка и плавающие кнопки ---------- */
+  const header = $(".header"), floatMsg = $(".float-msg");
+  const onScroll = () => {
+    header.classList.toggle("is-scrolled", scrollY > 10);
+    floatMsg.classList.toggle("is-visible", scrollY > innerHeight * 0.6);
+  };
+  addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  /* ---------- Светлячки ---------- */
   const sparks = $(".hero__sparks");
   if (sparks && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
     for (let i = 0; i < 14; i++) {
@@ -265,11 +255,12 @@
       s.className = "spark";
       s.style.left = Math.random() * 100 + "%";
       s.style.setProperty("--dx", (Math.random() * 120 - 60).toFixed(0) + "px");
-      s.style.animationDuration = (6 + Math.random() * 8).toFixed(1) + "s";
+      s.style.animationDuration = (7 + Math.random() * 8).toFixed(1) + "s";
       s.style.animationDelay = (Math.random() * 10).toFixed(1) + "s";
       sparks.appendChild(s);
     }
   }
 
   renderGrid();
+  observeReveals();
 })();
