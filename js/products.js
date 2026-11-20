@@ -25,7 +25,6 @@ window.PRODUCTS = [
       "images/products/candle-orbit-1.jpg",
       "images/products/candle-orbit-4.jpg",
       "images/products/candle-orbit-5.jpg",
-      "images/products/candle-orbit-6.jpg",
       "images/products/candle-orbit-3.jpg",
       "images/products/candle-orbit-2.jpg",
     ],
