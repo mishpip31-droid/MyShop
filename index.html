@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Железно! — авторский декор из металла ручной работы, Минск</title>
+  <meta name="description" content="Подсвечники, светильники, столы, скамейки, кормушки и арт-объекты из металла ручной работы. Изготовление на заказ. Минск, доставка по городу.">
+  <meta property="og:title" content="Железно! — декор из металла ручной работы">
+  <meta property="og:description" content="Авторские вещи для интерьера и сада. Минск.">
+  <meta name="theme-color" content="#121212">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23121212'/%3E%3Ctext x='32' y='46' font-family='Arial Black,Arial' font-weight='900' font-size='40' text-anchor='middle' fill='%23ff6a1a'%3EЖ%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;500;600&display=swap&subset=cyrillic" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="header" id="top">
+  <div class="container header__inner">
+    <a href="#top" class="logo">Железно<span>!</span></a>
+    <nav class="nav" id="nav">
+      <a href="#catalog">Каталог</a>
+      <a href="#custom">На заказ</a>
+      <a href="#about">О мастере</a>
+      <a href="#delivery">Доставка</a>
+      <a href="#contacts">Контакты</a>
+    </nav>
+    <a class="header__phone" data-phone-link href="#"><span data-phone></span></a>
+    <button class="burger" id="burger" aria-label="Меню" aria-expanded="false"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main>
+  <!-- ГЛАВНЫЙ ЭКРАН -->
+  <section class="hero">
+    <div class="hero__sparks" aria-hidden="true"></div>
+    <div class="container hero__inner">
+      <p class="hero__kicker">Мастерская металлического декора · Минск</p>
+      <h1 class="hero__title">Сделано<br><span>Железно!</span></h1>
+      <p class="hero__text">Подсвечники, светильники, столы, скамейки и арт-объекты из профильной трубы. Сварка, покраска и душа — всё своими руками. Каждая вещь штучная.</p>
+      <div class="hero__actions">
+        <a href="#catalog" class="btn btn--primary">Смотреть каталог</a>
+        <a href="#custom" class="btn btn--ghost">Сделать на заказ</a>
+      </div>
+      <ul class="hero__facts">
+        <li><b>100%</b> ручная работа</li>
+        <li><b>Под размер</b> и цвет</li>
+        <li><b>Доставка</b> по Минску</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- КАТАЛОГ -->
+  <section class="section" id="catalog">
+    <div class="container">
+      <div class="section__head">
+        <h2 class="section__title">Каталог</h2>
+        <div class="filters" role="tablist">
+          <button class="filter is-active" data-filter="all">Всё</button>
+          <button class="filter" data-filter="interior">Для интерьера</button>
+          <button class="filter" data-filter="garden">Для сада</button>
+        </div>
+      </div>
+      <div class="grid" id="grid"></div>
+      <p class="catalog__note">Не нашли нужное? <a href="#custom">Сделаю под ваш размер и идею →</a></p>
+    </div>
+  </section>
+
+  <!-- НА ЗАКАЗ -->
+  <section class="section section--alt" id="custom">
+    <div class="container custom">
+      <div class="custom__info">
+        <h2 class="section__title">Изготовление на заказ</h2>
+        <p>Есть идея, фото из интернета или просто нужный размер? Опишите — я рассчитаю стоимость и сроки.</p>
+        <ol class="steps">
+          <li><b>Заявка</b> — заполните форму или напишите в мессенджер</li>
+          <li><b>Обсуждение</b> — уточню детали, предложу эскиз и цену</li>
+          <li><b>Изготовление</b> — обычно 5–14 дней, присылаю фото процесса</li>
+          <li><b>Получение</b> — самовывоз или доставка по Минску</li>
+        </ol>
+      </div>
+
+      <form class="form card" id="customForm" novalidate>
+        <input type="hidden" name="formType" value="Заказ по идее">
+        <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <label class="field">
+          <span>Что нужно сделать? *</span>
+          <select name="item" required>
+            <option value="">— выберите —</option>
+            <option>Подсвечник</option><option>Светильник / торшер</option>
+            <option>Стол</option><option>Скамейка</option><option>Кормушка для птиц</option>
+            <option>Ложка для обуви</option><option>Арт-объект / панно</option>
+            <option>Садовый декор</option><option>Другое</option>
+          </select>
+        </label>
+        <div class="field-row">
+          <label class="field"><span>Размеры</span><input name="size" placeholder="напр. 150 × 50 × 80 см"></label>
+          <label class="field"><span>Цвет</span><input name="color" placeholder="чёрный, графит, ржавчина…"></label>
+        </div>
+        <label class="field"><span>Опишите идею *</span>
+          <textarea name="details" rows="4" required placeholder="Для чего, где будет стоять, особые пожелания"></textarea></label>
+        <label class="field"><span>Бюджет</span>
+          <select name="budget">
+            <option value="">— не важно / обсудим —</option>
+            <option>до 100 BYN</option><option>100–300 BYN</option>
+            <option>300–600 BYN</option><option>более 600 BYN</option>
+          </select>
+        </label>
+        <label class="field field--file">
+          <span>Фото-пример или эскиз (до 3 файлов)</span>
+          <input type="file" name="photos" accept="image/*" multiple>
+          <small class="file-hint" id="fileHint">JPG/PNG, до 10 МБ каждый</small>
+        </label>
+        <div class="field-row">
+          <label class="field"><span>Ваше имя *</span><input name="name" required autocomplete="name"></label>
+          <label class="field"><span>Телефон *</span><input name="phone" type="tel" required autocomplete="tel" placeholder="+375 (__) ___-__-__"></label>
+        </div>
+        <label class="field"><span>Как удобнее связаться?</span>
+          <select name="contactVia"><option>Звонок</option><option>Telegram</option><option>Viber</option><option>WhatsApp</option></select>
+        </label>
+        <button class="btn btn--primary btn--wide" type="submit">Отправить заявку</button>
+        <p class="form__legal">Нажимая кнопку, вы соглашаетесь на обработку контактных данных для связи по заказу.</p>
+      </form>
+    </div>
+  </section>
+
+  <!-- О МАСТЕРЕ -->
+  <section class="section" id="about">
+    <div class="container about">
+      <div class="about__photo" aria-hidden="true">
+        <div class="about__placeholder">Фото мастера<br><small>в мастерской, с маской или за сваркой</small></div>
+      </div>
+      <div class="about__text">
+        <h2 class="section__title">О мастере</h2>
+        <p>Привет! Я делаю вещи из металла своими руками в небольшой мастерской в Минске. Профильная труба, сварка, шлифовка, покраска — каждый шов проходит через мои руки.</p>
+        <p>Мне нравится, когда грубый металл становится уютным: подсвечник на полке, скамейка в саду, кормушка, к которой каждое утро прилетают синицы.</p>
+        <ul class="features">
+          <li><b>Надёжно.</b> Толстостенная труба, ровные швы, порошковая или стойкая эмаль.</li>
+          <li><b>Штучно.</b> Небольшие серии и уникальные работы.</li>
+          <li><b>Честно.</b> Фото процесса, сроки и цена — до начала работы.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ДОСТАВКА -->
+  <section class="section section--alt" id="delivery">
+    <div class="container">
+      <h2 class="section__title">Доставка и оплата</h2>
+      <div class="cards3">
+        <div class="card info"><h3>Самовывоз</h3><p data-pickup></p></div>
+        <div class="card info"><h3>Доставка по Минску</h3><p data-delivery></p></div>
+        <div class="card info"><h3>Оплата</h3><p>Наличными или переводом при получении. Для заказных изделий — предоплата 30–50%.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- КОНТАКТЫ -->
+  <section class="section" id="contacts">
+    <div class="container contacts">
+      <div>
+        <h2 class="section__title">Контакты</h2>
+        <p class="contacts__big"><a data-phone-link href="#"><span data-phone></span></a></p>
+        <p class="muted"><span data-city></span> · <span data-hours></span></p>
+        <div class="messengers" data-messengers></div>
+      </div>
+      <div class="card contacts__cta">
+        <h3>Есть вопрос?</h3>
+        <p>Напишите в любой мессенджер — отвечаю быстро. Пришлите фото того, что хотите, и я подскажу цену.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <span class="logo logo--sm">Железно<span>!</span></span>
+    <span class="muted">© <span id="year"></span> Мастерская металлического декора, Минск</span>
+  </div>
+</footer>
+
+<!-- Плавающие кнопки мессенджеров -->
+<div class="float-msg" data-messengers-float></div>
+
+<!-- Окно товара -->
+<div class="modal" id="modal" aria-hidden="true">
+  <div class="modal__backdrop" data-close></div>
+  <div class="modal__box" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <button class="modal__close" data-close aria-label="Закрыть">×</button>
+    <div class="modal__media" id="mMedia"></div>
+    <div class="modal__body">
+      <p class="modal__cat" id="mCat"></p>
+      <h3 class="modal__title" id="mTitle"></h3>
+      <p class="modal__price" id="mPrice"></p>
+      <p id="mDesc"></p>
+      <dl class="specs" id="mSpecs"></dl>
+
+      <form class="form" id="orderForm" novalidate>
+        <input type="hidden" name="formType" value="Заказ из каталога">
+        <input type="hidden" name="product">
+        <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <div class="field-row">
+          <label class="field"><span>Имя *</span><input name="name" required autocomplete="name"></label>
+          <label class="field"><span>Телефон *</span><input name="phone" type="tel" required autocomplete="tel" placeholder="+375 (__) ___-__-__"></label>
+        </div>
+        <label class="field"><span>Комментарий</span><input name="details" placeholder="цвет, размер, количество…"></label>
+        <button class="btn btn--primary btn--wide" type="submit">Заказать</button>
+      </form>
+      <p class="modal__or">или сразу написать:</p>
+      <div class="messengers messengers--sm" id="mMessengers"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="js/config.js"></script>
+<script src="js/products.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
