@@ -11,6 +11,26 @@
    ========================================================= */
 window.PRODUCTS = [
   {
+    id: "candle-orbit",
+    name: "Подсвечник «Орбита»",
+    category: "interior",
+    icon: "candle",
+    price: null,          // ← впишите цену, например 55
+    priceFrom: false,
+    badge: "Новинка",
+    size: "Высота 17,5 см · основание Ø 10 см",
+    color: "Состаренное золото",
+    description: "Лёгкий подсвечник для одной тонкой свечи. Стержень плавно перетекает в кольцо-основание, поэтому подсвечник стоит устойчиво и выглядит почти невесомым. Гнездо Ø 2,3 см подходит для стандартных столовых свечей. Хорош поодиночке, а в паре разной высоты смотрится особенно уютно.",
+    images: [
+      "images/products/candle-orbit-1.jpg",
+      "images/products/candle-orbit-4.jpg",
+      "images/products/candle-orbit-5.jpg",
+      "images/products/candle-orbit-6.jpg",
+      "images/products/candle-orbit-3.jpg",
+      "images/products/candle-orbit-2.jpg",
+    ],
+  },
+  {
     id: "candle-trio",
     name: "Подсвечник «Лофт-трио»",
     category: "interior",
