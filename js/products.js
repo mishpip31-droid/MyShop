@@ -15,7 +15,7 @@ window.PRODUCTS = [
     name: "Подсвечник «Орбита»",
     category: "interior",
     icon: "candle",
-    price: null,          // ← впишите цену, например 55
+    price: 45,
     priceFrom: false,
     badge: "Новинка",
     size: "Высота 17,5 см · основание Ø 10 см",
