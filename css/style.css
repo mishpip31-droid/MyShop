@@ -428,3 +428,13 @@ input[type=file]::file-selector-button:hover { background: var(--ink); color: va
   .modal__body { padding: 30px 20px; }
   .modal__title { font-size: 36px; }
 }
+
+/* ===== Плашка «сайт в разработке» ===== */
+.notice { background: var(--dark); color: #e9dccb; font-size: 13.5px; line-height: 1.45; position: relative; z-index: 60; }
+.notice[hidden] { display: none; }
+.notice__inner { display: flex; align-items: center; gap: 12px; padding: 10px 0; }
+.notice__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--honey); flex-shrink: 0; box-shadow: 0 0 0 0 rgba(217,160,91,.6); animation: pulse 2s infinite; }
+@keyframes pulse { 70% { box-shadow: 0 0 0 8px rgba(217,160,91,0); } 100% { box-shadow: 0 0 0 0 rgba(217,160,91,0); } }
+.notice__text { margin: 0; flex: 1; }
+.notice__close { flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; border: 1px solid rgba(250,246,239,.25); background: transparent; color: inherit; font: 300 18px/1 var(--sans); cursor: pointer; }
+.notice__close:hover { background: var(--paper); color: var(--dark); }

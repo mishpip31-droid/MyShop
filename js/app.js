@@ -45,7 +45,8 @@
   const waLink = (text) => `https://wa.me/${CFG.phone}${text ? `?text=${encodeURIComponent(text)}` : ""}`;
   function messengerLinks(text) {
     const out = [];
-    if (CFG.telegram) out.push({ cls: "tg", name: "Telegram", href: `https://t.me/${encodeURIComponent(CFG.telegram)}` });
+    const tg = CFG.telegram ? encodeURIComponent(CFG.telegram) : CFG.phone ? `+${CFG.phone}` : "";
+    if (tg) out.push({ cls: "tg", name: "Telegram", href: `https://t.me/${tg}` });
     if (CFG.phone) {
       out.push({ cls: "vb", name: "Viber", href: `viber://chat?number=%2B${CFG.phone}` });
       out.push({ cls: "wa", name: "WhatsApp", href: waLink(text) });
@@ -230,6 +231,21 @@
   setText("[data-faq-delivery]", `Самовывоз: ${CFG.pickupAddress || ""}. ${CFG.deliveryInfo || ""} Оплата наличными или переводом при получении, для изделий на заказ — предоплата 30–50%.`);
   $$("[data-messengers], [data-messengers-float]").forEach((el) => (el.innerHTML = messengerLinks("Здравствуйте! Пишу с сайта «Железно!»")));
   $("#year").textContent = new Date().getFullYear();
+
+  /* ---------- Плашка «сайт в разработке» ---------- */
+  const notice = $("#notice");
+  if (notice && CFG.notice) {
+    let hidden = false;
+    try { hidden = sessionStorage.getItem("noticeHidden") === "1"; } catch (e) {}
+    if (!hidden) {
+      $(".notice__text", notice).textContent = CFG.notice;
+      notice.hidden = false;
+      $(".notice__close", notice).addEventListener("click", () => {
+        notice.hidden = true;
+        try { sessionStorage.setItem("noticeHidden", "1"); } catch (e) {}
+      });
+    }
+  }
 
   /* ---------- Мобильное меню ---------- */
   const burger = $("#burger"), nav = $("#nav");
