@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>С днём рождения! 🎆</title>
+<meta name="theme-color" content="#070a1c">
+<meta property="og:title" content="С днём рождения! 🎆">
+<meta property="og:description" content="Открой и нажми «Салют!»">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #ffd27a;
+    --gold-2: #ffb347;
+    --text: #f6f1ff;
+    --muted: rgba(246,241,255,.68);
+    --h: 100vh;
+  }
+  @supports (height: 100dvh) { :root { --h: 100dvh; } }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: var(--h); overflow: hidden; overscroll-behavior: none; }
+  body {
+    position: fixed; inset: 0; color: var(--text); font-family: "Manrope", system-ui, sans-serif;
+    background: radial-gradient(120% 70% at 50% 100%, #2a1f4d 0%, #141238 38%, #070a1c 75%) #070a1c;
+    user-select: none; -webkit-user-select: none; touch-action: manipulation;
+  }
+  canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  #stars { z-index: 0; animation: twinkle 6s ease-in-out infinite alternate; }
+  #fx { z-index: 1; }
+  @keyframes twinkle { from { opacity: .75; } to { opacity: 1; } }
+
+  .city { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; height: calc(var(--h) * .11); width: 100%; pointer-events: none; }
+  .city .b { fill: #04050d; }
+  .city .w { fill: #ffcf7a; opacity: .55; animation: win 7s steps(1) infinite; }
+  .city .w:nth-child(3n) { animation-delay: -2s; } .city .w:nth-child(4n) { animation-delay: -4.5s; opacity: .35; }
+  @keyframes win { 50% { opacity: .15; } }
+
+  .stage {
+    position: relative; z-index: 3; height: var(--h); display: flex; flex-direction: column; align-items: center;
+    justify-content: space-between; text-align: center; pointer-events: none;
+    padding: max(env(safe-area-inset-top), calc(var(--h) * .045)) 20px calc(var(--h) * .125 + env(safe-area-inset-bottom));
+  }
+  .stage > * { pointer-events: auto; }
+
+  .top { transition: transform 1s ease; }
+  .kicker {
+    font-size: clamp(10px, min(3vw, 1.6vh), 13px); letter-spacing: .32em; text-transform: uppercase; color: var(--gold);
+    font-weight: 700; opacity: .9;
+  }
+  h1 {
+    font-weight: 800; line-height: 1.02; margin-top: calc(var(--h) * .012);
+    font-size: clamp(30px, min(11vw, 6.2vh), 64px); letter-spacing: -.02em;
+    text-shadow: 0 2px 30px rgba(0,0,0,.6);
+  }
+  .name {
+    display: block; font-family: "Marck Script", cursive; font-weight: 400; letter-spacing: 0;
+    font-size: clamp(42px, min(15vw, 8.4vh), 92px); line-height: 1.1;
+    background: linear-gradient(100deg, #fff3c4 0%, var(--gold) 35%, #ff9d5c 70%, #ffd27a 100%);
+    background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: shimmer 5s linear infinite; filter: drop-shadow(0 0 18px rgba(255,190,100,.35));
+  }
+  .name:empty { display: none; }
+  @keyframes shimmer { to { background-position: -200% 0; } }
+
+  .wish {
+    width: min(100%, 460px); padding: clamp(14px, 2.4vh, 24px) clamp(16px, 5vw, 26px);
+    border-radius: 22px; background: rgba(20,18,52,.55); border: 1px solid rgba(255,255,255,.12);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 20px 50px -20px rgba(0,0,0,.7); transition: opacity .8s ease, transform .8s ease;
+  }
+  .wish__label { font-size: clamp(10px, 1.5vh, 12px); letter-spacing: .22em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; }
+  .wish__text {
+    margin: clamp(8px, 1.4vh, 14px) 0 clamp(10px, 1.8vh, 18px); font-weight: 500;
+    font-size: clamp(15px, min(4.4vw, 2.45vh), 21px); line-height: 1.42;
+    min-height: calc(1.42em * 4); display: flex; align-items: center; justify-content: center;
+    transition: opacity .35s ease, transform .35s ease;
+  }
+  .wish__text.out { opacity: 0; transform: translateY(8px); }
+  .btn-next {
+    border: 1px solid rgba(255,255,255,.22); background: rgba(255,255,255,.06); color: var(--text);
+    font: 700 clamp(13px, 1.9vh, 15px) "Manrope", sans-serif; padding: clamp(9px, 1.4vh, 12px) 20px; border-radius: 999px; cursor: pointer;
+    transition: background .25s, transform .15s;
+  }
+  .btn-next:active { transform: scale(.96); }
+  .btn-next:hover { background: rgba(255,255,255,.14); }
+
+  .bottom { display: flex; flex-direction: column; align-items: center; gap: clamp(8px, 1.4vh, 14px); }
+  .btn-salute {
+    position: relative; border: 0; cursor: pointer; color: #2b1300;
+    font: 800 clamp(18px, min(5.4vw, 3vh), 24px) "Manrope", sans-serif; letter-spacing: .02em;
+    padding: clamp(14px, 2.2vh, 20px) clamp(36px, 12vw, 56px); border-radius: 999px;
+    background: linear-gradient(180deg, #ffe39a, #ffb347 60%, #ff8a3d);
+    box-shadow: 0 0 0 6px rgba(255,190,100,.15), 0 12px 40px -6px rgba(255,150,60,.7), inset 0 2px 0 rgba(255,255,255,.6);
+    animation: pulse 2.2s ease-in-out infinite; transition: transform .15s;
+  }
+  .btn-salute:active { transform: scale(.95); }
+  .btn-salute::after {
+    content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+    background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,.65) 48%, transparent 62%);
+    background-size: 250% 100%; animation: shine 3.2s ease-in-out infinite;
+  }
+  @keyframes pulse { 50% { box-shadow: 0 0 0 14px rgba(255,190,100,0), 0 12px 40px -6px rgba(255,150,60,.9), inset 0 2px 0 rgba(255,255,255,.6); } }
+  @keyframes shine { from { background-position: 150% 0; } to { background-position: -100% 0; } }
+  .hint { font-size: clamp(11px, 1.6vh, 13px); color: var(--muted); }
+  .sign { font-family: "Marck Script", cursive; font-size: clamp(18px, 2.8vh, 24px); color: var(--gold); opacity: .95; }
+
+  /* Во время салюта открытка уступает небо фейерверку */
+  body.show .wish { opacity: .12; transform: scale(.97); }
+  body.show .hint { opacity: 0; }
+
+  @media (max-height: 520px) { .hint { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .name, .btn-salute, .btn-salute::after, #stars { animation: none; } }
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+<canvas id="fx"></canvas>
+
+<svg class="city" viewBox="0 0 1000 110" preserveAspectRatio="none" aria-hidden="true">
+  <path class="b" d="M0 110V70h40V52h28v18h22V38h34v32h18V58h30v-8h12v8h20v52zM212 110V44h46v-14h6v14h20v66zM290 110V62h30V40l18-12 18 12v22h26v48zM388 110V54h52v56zM446 110V26h12V12h4v14h12v84zM480 110V66h34V48h40v62zM560 110V36h44v74zM610 110V58h26V44h30v66zM672 110V70h36V30h8v-6h4v6h8v80zM734 110V50h50v60zM790 110V64h22V42h40v68zM858 110V56h34V36h30v74zM928 110V68h28V50h44v60z"/>
+  <rect class="w" x="104" y="48" width="5" height="6"/><rect class="w" x="118" y="60" width="5" height="6"/><rect class="w" x="228" y="56" width="5" height="6"/>
+  <rect class="w" x="244" y="76" width="5" height="6"/><rect class="w" x="400" y="66" width="5" height="6"/><rect class="w" x="420" y="82" width="5" height="6"/>
+  <rect class="w" x="452" y="40" width="4" height="6"/><rect class="w" x="574" y="50" width="5" height="6"/><rect class="w" x="588" y="72" width="5" height="6"/>
+  <rect class="w" x="746" y="62" width="5" height="6"/><rect class="w" x="766" y="80" width="5" height="6"/><rect class="w" x="872" y="70" width="5" height="6"/>
+  <rect class="w" x="900" y="50" width="5" height="6"/><rect class="w" x="682" y="84" width="5" height="6"/><rect class="w" x="300" y="76" width="5" height="6"/>
+</svg>
+
+<main class="stage">
+  <header class="top">
+    <p class="kicker">✦ Сегодня твой день ✦</p>
+    <h1>С днём рождения<span id="comma">,</span><span class="name" id="name"></span></h1>
+  </header>
+
+  <section class="wish" aria-live="polite">
+    <div class="wish__label"><span>Пожелание</span><span id="counter"></span></div>
+    <p class="wish__text" id="wish"></p>
+    <button class="btn-next" id="next">Ещё пожелание ↻</button>
+  </section>
+
+  <footer class="bottom">
+    <button class="btn-salute" id="salute">🎆 Салют!</button>
+    <p class="hint" id="hint">включи звук · коснись неба — запустишь ракету</p>
+    <p class="sign" id="sign"></p>
+  </footer>
+</main>
+
+<script>
+/* ===================== НАСТРОЙКИ ОТКРЫТКИ =====================
+   Имя можно задать здесь или в ссылке: .../birthday/?name=Саша   */
+const CONFIG = {
+  name: "",
+  from: "С любовью — сестра и Михаил",
+};
+
+const WISHES = [
+  "Пусть удача ходит за тобой, как кот за тем, кто открыл холодильник: тихо, преданно и с надеждой на лучшее.",
+  "Если понадобятся стальные нервы — обращайся, сварю по-родственному. Но лучше пусть не понадобятся!",
+  "Желаю, чтобы зарплата росла быстрее цен, мечты сбывались быстрее планов, а понедельники ощущались как пятницы.",
+  "Пусть дорога будет ровной, машина — исправной, а штрафы встречаются только в компьютерных играх.",
+  "Ты лучший брат, какого только могла пожелать сестра, и лучший шурин, о котором можно мечтать. Не меняйся!",
+  "Пусть годы добавляют мудрости, но никогда не отнимают озорства. Возраст — это просто уровень, а ты явно качаешься правильно.",
+  "Желаю тихих утр, громкого смеха и людей рядом, с которыми хорошо и молчать, и болтать до утра.",
+  "Пусть Wi-Fi ловит везде, проблемы — нигде, а хорошие новости приходят без очереди.",
+  "Желаю столько поводов для радости, сколько свечей на торте, — и ещё немного сверху, на вырост.",
+  "Пусть всё задуманное получается с первого раза, а то, что с первого не получилось, оказывается к лучшему.",
+  "Желаю здоровья богатырского, сна младенческого и аппетита как после бани.",
+  "И главное пожелание от сварщика: пусть всё в твоей жизни будет железно! 🔥",
+];
+
+/* ===================== ПОЗДРАВЛЕНИЕ ===================== */
+const qs = new URLSearchParams(location.search);
+const NAME = (qs.get("name") || CONFIG.name || "").trim();
+document.getElementById("name").textContent = NAME;
+document.getElementById("comma").textContent = NAME ? "," : "!";
+document.getElementById("sign").textContent = qs.get("from") || CONFIG.from;
+if (NAME) document.title = `С днём рождения, ${NAME}! 🎆`;
+
+const wishEl = document.getElementById("wish"), counterEl = document.getElementById("counter");
+let order = WISHES.map((_, i) => i).sort(() => Math.random() - .5), wi = 0;
+function showWish(first) {
+  const set = () => { wishEl.textContent = WISHES[order[wi]]; counterEl.textContent = `${wi + 1} / ${WISHES.length}`; wishEl.classList.remove("out"); };
+  if (first) return set();
+  wishEl.classList.add("out");
+  setTimeout(set, 330);
+}
+showWish(true);
+document.getElementById("next").addEventListener("click", (e) => {
+  e.stopPropagation();
+  wi = (wi + 1) % WISHES.length;
+  showWish();
+  initAudio(); chime();
+  const r = e.currentTarget.getBoundingClientRect();
+  sparkle(r.left + r.width / 2, r.top);
+});
+
+/* ===================== ЗВЁЗДЫ ===================== */
+const stars = document.getElementById("stars"), sctx = stars.getContext("2d");
+const fx = document.getElementById("fx"), ctx = fx.getContext("2d");
+let W, H, DPR, S;
+function resize() {
+  DPR = Math.min(window.devicePixelRatio || 1, 2);
+  W = innerWidth; H = innerHeight; S = Math.max(.6, Math.min(1.25, Math.min(W, H * .75) / 520));
+  for (const c of [stars, fx]) { c.width = W * DPR; c.height = H * DPR; }
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0); sctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  sctx.clearRect(0, 0, W, H);
+  const n = Math.round(W * H / 2600);
+  for (let i = 0; i < n; i++) {
+    const x = Math.random() * W, y = Math.random() * H * .85, r = Math.random() ** 3 * 1.4 + .25;
+    sctx.globalAlpha = .25 + Math.random() * .75 * (1 - y / H);
+    sctx.fillStyle = Math.random() < .15 ? "#ffe2b8" : Math.random() < .2 ? "#c9d6ff" : "#fff";
+    sctx.beginPath(); sctx.arc(x, y, r, 0, Math.PI * 2); sctx.fill();
+  }
+  sctx.globalAlpha = 1;
+}
+addEventListener("resize", resize); resize();
+
+/* ===================== ЗВУК (синтез в браузере) ===================== */
+let AC, master, verbIn, noiseBuf, musicBus;
+function initAudio() {
+  if (AC) { if (AC.state !== "running") AC.resume(); return; }
+  const Ctx = window.AudioContext || window.webkitAudioContext;
+  if (!Ctx) return;
+  AC = new Ctx();
+  const comp = AC.createDynamicsCompressor();
+  comp.threshold.value = -14; comp.ratio.value = 5; comp.attack.value = .003; comp.release.value = .25;
+  master = AC.createGain(); master.gain.value = .95;
+  master.connect(comp); comp.connect(AC.destination);
+  // Реверберация «ночного неба»
+  const verb = AC.createConvolver(), len = AC.sampleRate * 3.2, ir = AC.createBuffer(2, len, AC.sampleRate);
+  for (let ch = 0; ch < 2; ch++) { const d = ir.getChannelData(ch); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.6); }
+  verb.buffer = ir; verbIn = AC.createGain(); verbIn.gain.value = .5; verbIn.connect(verb); verb.connect(master);
+  noiseBuf = AC.createBuffer(1, AC.sampleRate * 2, AC.sampleRate);
+  const nd = noiseBuf.getChannelData(0); for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
+  musicBus = AC.createGain(); musicBus.gain.value = .42; musicBus.connect(master);
+  const mv = AC.createGain(); mv.gain.value = .55; musicBus.connect(mv); mv.connect(verbIn);
+  // разблокировка на iOS
+  const s = AC.createBufferSource(); s.buffer = AC.createBuffer(1, 1, 22050); s.connect(AC.destination); s.start(0);
+}
+function out(node, pan, wet = .4) {
+  let n = node;
+  if (AC.createStereoPanner) { const p = AC.createStereoPanner(); p.pan.value = Math.max(-1, Math.min(1, pan)); n.connect(p); n = p; }
+  n.connect(master);
+  const w = AC.createGain(); w.gain.value = wet; n.connect(w); w.connect(verbIn);
+}
+function noise(t, dur) { const s = AC.createBufferSource(); s.buffer = noiseBuf; s.loop = true; s.start(t, Math.random()); s.stop(t + dur); return s; }
+
+function soundLaunch(flight, pan, whistle) {
+  if (!AC) return;
+  const t = AC.currentTime;
+  const n = noise(t, flight + .1), bp = AC.createBiquadFilter(), g = AC.createGain();
+  bp.type = "bandpass"; bp.Q.value = 1.2; bp.frequency.setValueAtTime(350, t); bp.frequency.exponentialRampToValueAtTime(1600, t + flight);
+  g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.16, t + .06); g.gain.exponentialRampToValueAtTime(.002, t + flight);
+  n.connect(bp); bp.connect(g); out(g, pan, .25);
+  if (whistle) {
+    const o = AC.createOscillator(), og = AC.createGain();
+    o.type = "sine"; o.frequency.setValueAtTime(1300, t); o.frequency.exponentialRampToValueAtTime(2900 + Math.random() * 700, t + flight);
+    og.gain.setValueAtTime(0, t); og.gain.linearRampToValueAtTime(.05, t + .15); og.gain.linearRampToValueAtTime(0, t + flight);
+    o.connect(og); out(og, pan, .35); o.start(t); o.stop(t + flight + .05);
+  }
+}
+function soundBoom(size, pan, crack) {
+  if (!AC) return;
+  const t = AC.currentTime + .03 + Math.random() * .12;   // звук чуть отстаёт от вспышки
+  const n = noise(t, 2.6), lp = AC.createBiquadFilter(), g = AC.createGain();
+  lp.type = "lowpass"; lp.frequency.setValueAtTime(2600 * size, t); lp.frequency.exponentialRampToValueAtTime(90, t + 1.6);
+  g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(1.1 * size, t + .006); g.gain.exponentialRampToValueAtTime(.001, t + 2.4);
+  n.connect(lp); lp.connect(g); out(g, pan, .6);
+  const o = AC.createOscillator(), og = AC.createGain();
+  o.frequency.setValueAtTime(95, t); o.frequency.exponentialRampToValueAtTime(32, t + .5);
+  og.gain.setValueAtTime(.9 * size, t); og.gain.exponentialRampToValueAtTime(.001, t + .7);
+  o.connect(og); out(og, pan, .2); o.start(t); o.stop(t + .8);
+  if (crack) soundCrackle(t + .35, 1.4, pan);
+}
+function soundCrackle(t0, dur, pan) {
+  for (let i = 0; i < 70; i++) {
+    const t = t0 + Math.random() ** 1.3 * dur, s = AC.createBufferSource(), hp = AC.createBiquadFilter(), g = AC.createGain();
+    s.buffer = noiseBuf; hp.type = "highpass"; hp.frequency.value = 2500 + Math.random() * 3000;
+    const v = .05 + Math.random() * .2;
+    g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(.001, t + .012 + Math.random() * .02);
+    s.connect(hp); hp.connect(g); out(g, pan + (Math.random() - .5) * .4, .3); s.start(t, Math.random() * 1.5); s.stop(t + .05);
+  }
+}
+// Музыкальная шкатулка
+function bell(freq, t, dur, vol = 1) {
+  const g = AC.createGain();
+  g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.32 * vol, t + .008); g.gain.exponentialRampToValueAtTime(.001, t + dur + 1.4);
+  g.connect(musicBus);
+  [[1, 1], [2, .32], [3, .12], [4.2, .05]].forEach(([m, a]) => {
+    const o = AC.createOscillator(), og = AC.createGain();
+    o.type = "sine"; o.frequency.value = freq * m; og.gain.value = a;
+    o.connect(og); og.connect(g); o.start(t); o.stop(t + dur + 1.5);
+  });
+}
+const NOTE = (n) => 440 * Math.pow(2, (n - 69) / 12);
+function playBirthday() {
+  if (!AC) return 0;
+  const G4 = 67, A4 = 69, B4 = 71, C5 = 72, D5 = 74, E5 = 76, F5 = 77, G5 = 79;
+  const song = [
+    [G4, .75], [G4, .25], [A4, 1], [G4, 1], [C5, 1], [B4, 2],
+    [G4, .75], [G4, .25], [A4, 1], [G4, 1], [D5, 1], [C5, 2],
+    [G4, .75], [G4, .25], [G5, 1], [E5, 1], [C5, 1], [B4, 1], [A4, 2],
+    [F5, .75], [F5, .25], [E5, 1], [C5, 1], [D5, 1], [C5, 3],
+  ];
+  const beat = .43; let t = AC.currentTime + .25;
+  for (const [n, d] of song) { bell(NOTE(n), t, d * beat, n > 75 ? .9 : 1); bell(NOTE(n - 12), t, d * beat, .18); t += d * beat; }
+  return (t - AC.currentTime) * 1000;
+}
+function chime() { if (!AC) return; const t = AC.currentTime; [84, 88, 91].forEach((n, i) => bell(NOTE(n), t + i * .07, .3, .35)); }
+
+/* ===================== ФЕЙЕРВЕРК ===================== */
+const rockets = [], parts = [], flashes = [];
+const MAXP = matchMedia("(max-width: 700px)").matches ? 2200 : 4000;
+const rnd = (a, b) => a + Math.random() * (b - a);
+const pick = (a) => a[Math.floor(Math.random() * a.length)];
+const PALETTE = [[0, 95, 62], [25, 100, 60], [45, 100, 62], [120, 85, 60], [185, 95, 62], [215, 95, 66], [275, 90, 70], [320, 95, 66], [350, 95, 66]];
+const TYPES = ["peony", "peony", "willow", "ring", "glitter", "double", "crossette", "palm"];
+
+function launch(tx, ty, type) {
+  const x = tx ?? rnd(W * .12, W * .88);
+  const y = ty ?? rnd(H * .1, H * .42);
+  const sx = x + rnd(-W * .08, W * .08), sy = H + 10;
+  const flight = rnd(.95, 1.35);                    // секунды подъёма
+  const frames = flight * 60;
+  const g = .06 * S;                                 // гравитация ракеты
+  const vy = (y - sy - .5 * g * frames * frames) / frames;
+  rockets.push({ x: sx, y: sy, px: sx, py: sy, vx: (x - sx) / frames, vy, g, life: frames, type: type || pick(TYPES), col: pick(PALETTE) });
+  soundLaunch(flight, (sx / W) * 2 - 1, Math.random() < .35);
+}
+
+function P(x, y, vx, vy, o) {
+  if (parts.length > MAXP) return;
+  parts.push(Object.assign({ x, y, px: x, py: y, vx, vy, a: 1, decay: rnd(.011, .017), drag: .965, g: .055 * S, w: 2 * S, h: 40, s: 100, l: 62, flick: 0, trail: 0, split: 0 }, o));
+}
+function sphere(cx, cy, n, sp, o, extra) {
+  for (let i = 0; i < n; i++) {
+    const u = Math.random() * 2 - 1, th = Math.random() * Math.PI * 2, r = Math.sqrt(1 - u * u);
+    const v = sp * rnd(.9, 1.05);
+    P(cx, cy, Math.cos(th) * r * v, Math.sin(th) * r * v, typeof o === "function" ? o(i) : { ...o });
+  }
+}
+function explode(r) {
+  const { x, y } = r, [h, s, l] = r.col, k = S;
+  flashes.push({ x, y, a: 1, h, r: 150 * k });
+  const pan = (x / W) * 2 - 1;
+  switch (r.type) {
+    case "willow":
+      sphere(x, y, 110, 4.2 * k, { h: 40, s: 90, l: 58, decay: rnd(.0055, .0075), drag: .975, g: .032 * k, w: 1.6 * k, trail: 1 });
+      soundBoom(.85, pan, true); break;
+    case "ring": {
+      const n = 70, tilt = rnd(.25, 1), rot = rnd(0, Math.PI), sp = 5.2 * k;
+      for (let i = 0; i < n; i++) {
+        const a = (i / n) * Math.PI * 2, dx = Math.cos(a), dy = Math.sin(a) * tilt;
+        P(x, y, (dx * Math.cos(rot) - dy * Math.sin(rot)) * sp, (dx * Math.sin(rot) + dy * Math.cos(rot)) * sp, { h, s, l, w: 2.2 * k });
+      }
+      sphere(x, y, 26, 1.6 * k, { h: 50, s: 100, l: 80, w: 1.6 * k });
+      soundBoom(1, pan, false); break;
+    }
+    case "glitter":
+      sphere(x, y, 120, 4.6 * k, { h: 48, s: 100, l: 78, flick: 1, decay: rnd(.008, .011), drag: .968, w: 1.8 * k });
+      soundBoom(.9, pan, true); break;
+    case "double": {
+      const c2 = pick(PALETTE);
+      sphere(x, y, 100, 5.6 * k, { h, s, l });
+      sphere(x, y, 55, 2.9 * k, { h: c2[0], s: c2[1], l: c2[2] + 6 });
+      soundBoom(1.1, pan, false); break;
+    }
+    case "crossette":
+      sphere(x, y, 26, 4.8 * k, { h, s, l: l + 8, w: 2.6 * k, split: 1, decay: .02 });
+      soundBoom(.9, pan, false); break;
+    case "palm":
+      for (let i = 0; i < 9; i++) {
+        const a = (i / 9) * Math.PI * 2 + rnd(-.1, .1);
+        P(x, y, Math.cos(a) * 5 * k, Math.sin(a) * 5 * k - 1.2 * k, { h: 38, s: 95, l: 62, w: 3.2 * k, decay: .009, drag: .972, g: .045 * k, trail: 1 });
+      }
+      sphere(x, y, 40, 3.6 * k, { h, s, l });
+      soundBoom(1.05, pan, true); break;
+    case "heart": {
+      const n = 110, sc = .33 * k;
+      for (let i = 0; i < n; i++) {
+        const t = (i / n) * Math.PI * 2;
+        const hx = 16 * Math.sin(t) ** 3, hy = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+        P(x, y, hx * sc, hy * sc, { h: 345, s: 95, l: 66, w: 2.4 * k, drag: .955, g: .02 * k, decay: .0105 });
+      }
+      sphere(x, y, 40, 1.4 * k, { h: 40, s: 100, l: 80, flick: 1, w: 1.4 * k });
+      soundBoom(1.2, pan, true); break;
+    }
+    default: // peony
+      sphere(x, y, 130, 5.4 * k, { h, s, l });
+      soundBoom(1, pan, Math.random() < .3);
+  }
+}
+function sparkle(x, y) {
+  for (let i = 0; i < 22; i++) { const a = rnd(Math.PI * 1.1, Math.PI * 1.9); P(x, y, Math.cos(a) * rnd(1, 3.5) * S, Math.sin(a) * rnd(1, 3.5) * S, { h: 45, s: 100, l: 75, w: 1.5 * S, decay: .03, flick: 1 }); }
+}
+
+let last = performance.now();
+function frame(now) {
+  const dt = Math.min(3, (now - last) / 16.667); last = now;
+  // плавное затухание следов: небо остаётся прозрачным, звёзды видны
+  ctx.globalCompositeOperation = "destination-out";
+  ctx.fillStyle = `rgba(0,0,0,${Math.min(1, .2 * dt)})`;
+  ctx.fillRect(0, 0, W, H);
+  ctx.globalCompositeOperation = "lighter";
+  ctx.lineCap = "round";
+
+  for (let i = flashes.length - 1; i >= 0; i--) {
+    const f = flashes[i];
+    const gr = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, f.r);
+    gr.addColorStop(0, `hsla(${f.h},100%,85%,${.5 * f.a})`); gr.addColorStop(1, `hsla(${f.h},100%,60%,0)`);
+    ctx.fillStyle = gr; ctx.fillRect(f.x - f.r, f.y - f.r, f.r * 2, f.r * 2);
+    f.a -= .14 * dt; if (f.a <= 0) flashes.splice(i, 1);
+  }
+
+  for (let i = rockets.length - 1; i >= 0; i--) {
+    const r = rockets[i];
+    r.px = r.x; r.py = r.y;
+    r.x += r.vx * dt; r.vy += r.g * dt; r.y += r.vy * dt; r.life -= dt;
+    ctx.strokeStyle = "hsla(40,100%,80%,.95)"; ctx.lineWidth = 2.2 * S;
+    ctx.beginPath(); ctx.moveTo(r.px, r.py); ctx.lineTo(r.x, r.y); ctx.stroke();
+    if (Math.random() < .9) P(r.x, r.y, rnd(-.4, .4) * S, rnd(.4, 1.4) * S, { h: 35, s: 100, l: 65, w: 1.3 * S, decay: rnd(.035, .06), g: .02 * S, drag: .94 });
+    if (r.life <= 0 || r.vy >= -.3 * S) { explode(r); rockets.splice(i, 1); }
+  }
+
+  for (let i = parts.length - 1; i >= 0; i--) {
+    const p = parts[i];
+    p.px = p.x; p.py = p.y;
+    const d = Math.pow(p.drag, dt);
+    p.vx *= d; p.vy = p.vy * d + p.g * dt;
+    p.x += p.vx * dt; p.y += p.vy * dt;
+    p.a -= p.decay * dt;
+    if (p.trail && Math.random() < .35 * dt) P(p.x, p.y, 0, 0, { h: p.h, s: p.s, l: p.l - 8, w: p.w * .7, decay: .03, g: .015 * S, drag: .9 });
+    if (p.a <= 0) {
+      if (p.split) for (let k = 0; k < 4; k++) { const a = k * Math.PI / 2 + Math.PI / 4; P(p.x, p.y, Math.cos(a) * 2.6 * S, Math.sin(a) * 2.6 * S, { h: 45, s: 100, l: 72, w: 1.6 * S, decay: .028 }); }
+      parts.splice(i, 1); continue;
+    }
+    let a = p.a < .3 ? p.a / .3 : 1;
+    if (p.flick) a *= Math.random() < .5 ? 1 : .1;
+    const L = p.a > .85 ? 92 : p.l;                  // в первые мгновения искры почти белые
+    ctx.strokeStyle = `hsla(${p.h},${p.s}%,${L}%,${a})`;
+    ctx.lineWidth = p.w * (.55 + .45 * p.a);
+    ctx.beginPath(); ctx.moveTo(p.px, p.py); ctx.lineTo(p.x + .01, p.y); ctx.stroke();
+  }
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+/* ===================== ШОУ ===================== */
+const btn = document.getElementById("salute");
+let showTimer = null, timers = [];
+function show() {
+  initAudio();
+  timers.forEach(clearTimeout); timers = [];
+  document.body.classList.add("show");
+  const songMs = playBirthday() || 11500;
+  const dur = Math.max(9000, songMs - 1500);
+  let t = 150;
+  while (t < dur) {
+    const tt = t;
+    timers.push(setTimeout(() => launch(), tt));
+    if (Math.random() < .35) timers.push(setTimeout(() => launch(), tt + rnd(80, 300)));
+    t += rnd(380, 780);
+  }
+  // финал: залп и сердце
+  for (let i = 0; i < 7; i++) timers.push(setTimeout(() => launch(W * (.15 + i * .12), rnd(H * .12, H * .32), pick(["peony", "glitter", "double", "willow"])), dur + i * 120));
+  timers.push(setTimeout(() => launch(W / 2, H * .26, "heart"), dur + 1100));
+  clearTimeout(showTimer);
+  showTimer = setTimeout(() => { document.body.classList.remove("show"); btn.textContent = "🎆 Ещё салют!"; }, dur + 4200);
+  if (navigator.vibrate) navigator.vibrate(30);
+}
+btn.addEventListener("click", (e) => { e.stopPropagation(); show(); });
+
+// касание неба — ракета в эту точку
+addEventListener("pointerdown", (e) => {
+  if (e.target.closest("button, .wish")) return;
+  initAudio();
+  launch(e.clientX, Math.min(e.clientY, H * .7), pick(TYPES));
+});
+
+// приветственная искорка без звука
+setTimeout(() => { for (let i = 0; i < 2; i++) setTimeout(() => { launch(rnd(W * .2, W * .8), rnd(H * .12, H * .3), "peony"); }, i * 700); }, 900);
+</script>
+</body>
+</html>
