@@ -260,7 +260,7 @@
   /* ---------- Искры на главном экране ---------- */
   const sparks = $(".hero__sparks");
   if (sparks && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    for (let i = 0; i < 28; i++) {
+    for (let i = 0; i < 14; i++) {
       const s = document.createElement("i");
       s.className = "spark";
       s.style.left = Math.random() * 100 + "%";
