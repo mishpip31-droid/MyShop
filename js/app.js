@@ -4,6 +4,7 @@
   const CFG = window.SHOP_CONFIG || {};
   const PRODUCTS = window.PRODUCTS || [];
   const CATS = { interior: "Для дома", garden: "Для сада" };
+  const ORDERS_OPEN = CFG.ordersOpen !== false;
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -134,7 +135,9 @@
     const form = $("#orderForm");
     form.reset();
     form.product.value = `${p.name} (${priceText(p)})`;
-    $("#mMessengers").innerHTML = messengerLinks(`Здравствуйте! Хочу заказать: ${p.name} (${priceText(p)}).`);
+    $("#mMessengers").innerHTML = messengerLinks(ORDERS_OPEN
+      ? `Здравствуйте! Хочу заказать: ${p.name} (${priceText(p)}).`
+      : `Здравствуйте! Вопрос про ${p.name}.`);
     modal.classList.add("is-open");
     modal.setAttribute("aria-hidden", "false");
     document.body.style.overflow = "hidden";
@@ -185,6 +188,7 @@
     return lines.join("\n");
   }
   async function submit(form) {
+    if (!ORDERS_OPEN) return;
     if (form.website && form.website.value) return;
     if (!validate(form)) return;
     if (!CFG.orderEndpoint) {
@@ -245,6 +249,21 @@
         try { sessionStorage.setItem("noticeHidden", "1"); } catch (e) {}
       });
     }
+  }
+
+  /* ---------- Заказы ещё не принимаются ---------- */
+  if (!ORDERS_OPEN) {
+    document.documentElement.classList.add("orders-closed");
+    $$("#orderForm, #customForm").forEach((f) => {
+      $$("input, select, textarea, button", f).forEach((el) => (el.disabled = true));
+      const btn = $("button[type=submit]", f);
+      btn.textContent = "Приём заказов скоро откроется";
+      const note = document.createElement("p");
+      note.className = "form__closed";
+      note.textContent = "Мастерская готовится к открытию, заказы пока не принимаются. Вопросы можно задать в мессенджерах.";
+      f.prepend(note);
+    });
+    $(".modal__or").textContent = "Есть вопрос? Напишите";
   }
 
   /* ---------- Мобильное меню ---------- */

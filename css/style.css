@@ -438,3 +438,12 @@ input[type=file]::file-selector-button:hover { background: var(--ink); color: va
 .notice__text { margin: 0; flex: 1; }
 .notice__close { flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; border: 1px solid rgba(250,246,239,.25); background: transparent; color: inherit; font: 300 18px/1 var(--sans); cursor: pointer; }
 .notice__close:hover { background: var(--paper); color: var(--dark); }
+
+/* ===== Заказы ещё не принимаются ===== */
+.form__closed { margin: 0; padding: 14px 18px; border-radius: 14px; background: rgba(217,160,91,.18); color: var(--ink); font-size: 14px; line-height: 1.5; }
+.orders-closed .form :disabled { cursor: not-allowed; }
+.orders-closed .form .field { opacity: .45; }
+.orders-closed .form .btn[disabled] { opacity: 1; cursor: not-allowed; background: var(--bg-alt); color: var(--muted); }
+.orders-closed .form .btn[disabled] .arr { display: none; }
+.orders-closed .header__cta { display: none; }
+.orders-closed #orderForm > :not(.form__closed) { display: none; }
